@@ -1,15 +1,21 @@
-#ifndef MATRIX_H
-#define MATRIX_H
+#pragma once
+#include <vector>
+#include <functional>
 
-struct Matrix {
-    int rows;
-    int cols;
-    double* data;
+class Matrix {
 
-    Matrix(int r, int c);
-    ~Matrix();
+public:
+    std::vector<std::vector<float>> data;
+    int rows, cols;
 
-    void print();
+    Matrix(int rows, int cols);
+    static Matrix random(int rows, int cols);
+    Matrix dot(const Matrix& other) const;
+    Matrix transpose() const;
+    Matrix apply(float (*func)(float)) const;
+    Matrix apply_with(const Matrix& other, float (*func)(float, float)) const;
+    Matrix operator-(const Matrix& other) const;
+    Matrix operator*(float scalar) const;
+    void print() const;
+
 };
-
-#endif
