@@ -33,7 +33,7 @@ int main() {
     Matrix d_activation = activation1.backward(d_loss);
     layer1.backward(d_activation);
 
-    float learning_rate = 0.01;
+    float learning_rate = 0.01f;
     layer1.weights = layer1.weights - layer1.d_weights * learning_rate;
     layer1.biases = layer1.biases - layer1.d_biases * learning_rate;
 

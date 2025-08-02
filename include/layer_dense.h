@@ -9,7 +9,7 @@ public:
     Matrix d_weights, d_biases, d_inputs;
     Matrix input;
 
-    LayerDense(int input_size, int, output_size);
+    LayerDense(int input_size, int output_size);
     Matrix forward(const Matrix& input);
     void backward(const Matrix& d_output);
 };
