@@ -1,21 +1,36 @@
-CXX = clang++
-CXXFLAGS = -std=c++17 -g -Iinclude
+CXX = g++
+CXXFLAGS = -std=c++11 -Wall -Wextra -O2 -Iinclude
+TARGET = main
+SRCDIR = src
+INCDIR = include
+BUILDDIR = build
 
-SRC = src/main.cpp src/matrix.cpp src/layer_dense.cpp src/activation.cpp src/loss.cpp
-OUT = build/neuralnet
+SOURCES = $(wildcard $(SRCDIR)/*.cpp)
+OBJECTS = $(SOURCES:$(SRCDIR)/%.cpp=$(BUILDDIR)/%.o)
 
-all: $(OUT)
+all: $(TARGET)
 
-$(OUT): $(SRC)
-	@mkdir -p build
-	$(CXX) $(CXXFLAGS) $(SRC) -o $(OUT)
+$(TARGET): $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS)
 
-run: all
-	./$(OUT)
+$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
+	@mkdir -p $(BUILDDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILDDIR)/main.o: $(SRCDIR)/main.cpp $(INCDIR)/matrix.h $(INCDIR)/layer_dense.h $(INCDIR)/activation.h $(INCDIR)/loss.h $(INCDIR)/mnist_loader.h
+
+$(BUILDDIR)/matrix.o: $(SRCDIR)/matrix.cpp $(INCDIR)/matrix.h
+
+$(BUILDDIR)/layer_dense.o: $(SRCDIR)/layer_dense.cpp $(INCDIR)/layer_dense.h $(INCDIR)/matrix.h
+
+$(BUILDDIR)/activation.o: $(SRCDIR)/activation.cpp $(INCDIR)/activation.h $(INCDIR)/matrix.h
+
+$(BUILDDIR)/loss.o: $(SRCDIR)/loss.cpp $(INCDIR)/loss.h $(INCDIR)/matrix.h
+
+$(BUILDDIR)/mnist_loader.o: $(SRCDIR)/mnist_loader.cpp $(INCDIR)/mnist_loader.h $(INCDIR)/matrix.h
 
 clean:
-	rm -rf build
+	rm -f $(OBJECTS) $(TARGET)
+	rm -rf $(BUILDDIR)
 
-
-
-
+.PHONY: all clean

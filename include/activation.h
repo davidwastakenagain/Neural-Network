@@ -1,14 +1,29 @@
+#ifndef ACTIVATION_H
+#define ACTIVATION_H
 
-#pragma once
 #include "matrix.h"
+#include <cmath>
 
 class ActivationReLU {
-
 public:
     Matrix output;
-    Matrix forward(const Matrix& input);
-    Matrix backward(const Matrix& d_values);
+    Matrix dinputs;
 
+    ActivationReLU() : output(Matrix(1, 1)), dinputs(Matrix(1, 1)) {}
+    
+    void forward(const Matrix &inputs);
+    void backward(const Matrix &dvalues);
 };
 
+class ActivationSoftmax {
+public:
+    Matrix output;
+    Matrix dinputs;
 
+    ActivationSoftmax() : output(Matrix(1, 1)), dinputs(Matrix(1, 1)) {}
+
+    void forward(const Matrix &inputs);
+    void backward(const Matrix &dvalues);
+};
+
+#endif

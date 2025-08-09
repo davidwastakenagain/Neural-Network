@@ -1,21 +1,39 @@
 #include "activation.h"
+#include <vector>
+#include <cmath>
 
-float relu(float x) {
-    return x > 0 ? x : 0;
+
+void ActivationReLU::forward(const Matrix &inputs) {
+    output = inputs;
+    for (auto &val : output.data)
+        val = std::max(0.0f, val);
 }
 
-float relu_derivative(float out, float dval) {
-    return out > 0 ? dval : 0;
-
+void ActivationReLU::backward(const Matrix &dvalues) {
+    dinputs = Matrix(dvalues.rows, dvalues.cols);
+    for (size_t i = 0; i < dinputs.data.size(); i++) {
+        dinputs.data[i] = (output.data[i] > 0) ? dvalues.data[i] : 0.0f;
+    }
 }
 
-Matrix ActivationReLU::forward(const Matrix& input) {
-    output = input.apply(relu);
-    return output;
+
+void ActivationSoftmax::forward(const Matrix &inputs) {
+    output = Matrix(inputs.rows, inputs.cols);
+    for (int r = 0; r < inputs.rows; r++) {
+        float max_val = -1e9;
+        for (int c = 0; c < inputs.cols; c++)
+            if (inputs(r, c) > max_val) max_val = inputs(r, c);
+
+        float sum = 0.0f;
+        for (int c = 0; c < inputs.cols; c++) {
+            output(r, c) = std::exp(inputs(r, c) - max_val);
+            sum += output(r, c);
+        }
+        for (int c = 0; c < inputs.cols; c++)
+            output(r, c) /= sum;
+    }
 }
 
-Matrix ActivationReLU::backward(const Matrix& d_values) {
-    return output.apply_with(d_values, relu_derivative);
-
+void ActivationSoftmax::backward(const Matrix &dvalues) {
+    dinputs = dvalues;
 }
-
